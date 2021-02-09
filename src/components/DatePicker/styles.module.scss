@@ -14,7 +14,7 @@
   }
 }
 
-.monthYear {
+.title {
   font-size: 18px;
 
   & > button {
@@ -46,6 +46,26 @@
 }
 
 .monthPicker {
+  width: 280px;
+  height: 240px;
+  display: flex;
+  flex-wrap: wrap;
+
+  & > button {
+    margin: 0;
+    padding: 0;
+    width: 70px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid #c9d1d9;
+    font-size: 12px;
+    background: none;
+  }
+}
+.yearPicker {
   width: 280px;
   height: 240px;
   display: flex;

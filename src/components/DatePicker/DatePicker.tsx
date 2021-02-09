@@ -14,10 +14,20 @@ import {
   eachMonthOfInterval,
   setMonth,
   getMonth,
+  startOfDecade,
+  endOfDecade,
+  eachYearOfInterval,
+  subYears,
+  addYears,
+  setYear,
+  getYear,
 } from 'date-fns';
 import styles from './styles.module.scss';
 
 // 3
+
+const YEAR_BEFORE_DECADE = 0;
+const YEAR_AFTER_DECADE = 11;
 
 const getDays = (date: Date) => {
   const GRID_DAYS_AMOUNT = 42;
@@ -49,7 +59,20 @@ const getMonths = (date: Date) => {
   return months;
 };
 
+const getYears = (date: Date) => {
+  const decadeStart = startOfDecade(date);
+  const decadeEnd = endOfDecade(date);
+
+  const years = eachYearOfInterval({
+    start: subYears(decadeStart, 1),
+    end: addYears(decadeEnd, 1),
+  });
+
+  return years;
+};
+
 const getDateWithNewMonth = (date: Date) => setMonth(date, getMonth(date));
+const getDateWithNewYear = (date: Date) => setYear(date, getYear(date));
 
 const DatePicker = () => {
   const [date, setDate] = useState(new Date());
@@ -65,10 +88,16 @@ const DatePicker = () => {
 
   const days = getDays(date);
   const months = getMonths(date);
+  const years = getYears(date);
 
   const handleMonthClick = (newDate: Date) => {
     setDate(getDateWithNewMonth(newDate));
     setDayPicker();
+  };
+
+  const handleYearClick = (newDate: Date) => {
+    setDate(getDateWithNewYear(newDate));
+    setMonthPicker();
   };
 
   return (
@@ -77,13 +106,31 @@ const DatePicker = () => {
         <button type="button" onClick={prevMonth}>
           {'<'}
         </button>
-        <div className={styles.monthYear}>
-          <button type="button" onClick={setMonthPicker}>
-            {format(date, 'MMMM')}
-          </button>{' '}
-          <button type="button" onClick={setYearPicker}>
-            {format(date, 'yyyy')}
-          </button>
+        <div className={styles.title}>
+          {pickerType === 'day' && (
+            <>
+              <button type="button" onClick={setMonthPicker}>
+                {format(date, 'MMMM')}
+              </button>{' '}
+              <button type="button" onClick={setYearPicker}>
+                {format(date, 'yyyy')}
+              </button>
+            </>
+          )}
+          {pickerType === 'month' && (
+            <>
+              <button type="button" onClick={setMonthPicker}>
+                {format(date, 'yyyy')}
+              </button>
+            </>
+          )}
+          {pickerType === 'year' && (
+            <>
+              <button type="button" onClick={setMonthPicker}>
+                {`${format(startOfDecade(date), 'yyyy')} - ${format(endOfDecade(date), 'yyyy')}`}
+              </button>
+            </>
+          )}
         </div>
         <button type="button" onClick={nextMonth}>
           {'>'}
@@ -111,7 +158,22 @@ const DatePicker = () => {
           ))}
         </div>
       )}
-      {pickerType === 'year' && 'year'}
+      {pickerType === 'year' && (
+        <div className={styles.yearPicker}>
+          {years.map((year, index) => (
+            <button
+              type="button"
+              key={String(year)}
+              onClick={() => handleYearClick(year)}
+              style={{
+                opacity: index === YEAR_BEFORE_DECADE || index === YEAR_AFTER_DECADE ? 0.2 : 1,
+              }}
+            >
+              {format(year, 'yyyy')}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
