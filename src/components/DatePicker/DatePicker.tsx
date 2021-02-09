@@ -9,6 +9,11 @@ import {
   addMonths,
   subMonths,
   isSameMonth,
+  startOfYear,
+  endOfYear,
+  eachMonthOfInterval,
+  setMonth,
+  getMonth,
 } from 'date-fns';
 import styles from './styles.module.scss';
 
@@ -30,19 +35,41 @@ const getDays = (date: Date) => {
     end: addDays(monthEnd, GRID_DAYS_AMOUNT - (prevMonthDays.length + monthDays.length)),
   });
 
-  return [prevMonthDays, monthDays, nextMonthDays].flat();
+  const days = [prevMonthDays, monthDays, nextMonthDays].flat();
+
+  return days;
 };
+
+const getMonths = (date: Date) => {
+  const yearStart = startOfYear(date);
+  const yearEnd = endOfYear(date);
+
+  const months = eachMonthOfInterval({ start: yearStart, end: yearEnd });
+
+  return months;
+};
+
+const getDateWithNewMonth = (date: Date) => setMonth(date, getMonth(date));
 
 const DatePicker = () => {
   const [date, setDate] = useState(new Date());
 
+  const [pickerType, setPickerType] = useState<'day' | 'month' | 'year'>('day');
+
   const prevMonth = () => setDate(subMonths(date, 1));
   const nextMonth = () => setDate(addMonths(date, 1));
 
-  const days = getDays(date);
+  const setDayPicker = () => setPickerType('day');
+  const setMonthPicker = () => setPickerType('month');
+  const setYearPicker = () => setPickerType('year');
 
-  const month = format(date, 'MMMM');
-  const year = format(date, 'yyyy');
+  const days = getDays(date);
+  const months = getMonths(date);
+
+  const handleMonthClick = (newDate: Date) => {
+    setDate(getDateWithNewMonth(newDate));
+    setDayPicker();
+  };
 
   return (
     <div className={styles.container}>
@@ -51,19 +78,40 @@ const DatePicker = () => {
           {'<'}
         </button>
         <div className={styles.monthYear}>
-          {month} {year}
+          <button type="button" onClick={setMonthPicker}>
+            {format(date, 'MMMM')}
+          </button>{' '}
+          <button type="button" onClick={setYearPicker}>
+            {format(date, 'yyyy')}
+          </button>
         </div>
         <button type="button" onClick={nextMonth}>
           {'>'}
         </button>
       </div>
-      <div className={styles.picker}>
-        {days.map((day) => (
-          <div key={String(day)} style={{ opacity: isSameMonth(day, date) ? 1 : 0.2 }}>
-            {format(day, 'dd')}
-          </div>
-        ))}
-      </div>
+      {pickerType === 'day' && (
+        <div className={styles.dayPicker}>
+          {days.map((day) => (
+            <button
+              type="button"
+              key={String(day)}
+              style={{ opacity: isSameMonth(day, date) ? 1 : 0.2 }}
+            >
+              {format(day, 'dd')}
+            </button>
+          ))}
+        </div>
+      )}
+      {pickerType === 'month' && (
+        <div className={styles.monthPicker}>
+          {months.map((month) => (
+            <button type="button" key={String(month)} onClick={() => handleMonthClick(month)}>
+              {format(month, 'MMMM')}
+            </button>
+          ))}
+        </div>
+      )}
+      {pickerType === 'year' && 'year'}
     </div>
   );
 };

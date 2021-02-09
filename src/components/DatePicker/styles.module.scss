@@ -8,19 +8,32 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  & > button {
+    color: #000;
+  }
 }
 
 .monthYear {
   font-size: 18px;
+
+  & > button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
 }
 
-.picker {
+.dayPicker {
   width: 280px;
   height: 240px;
   display: flex;
   flex-wrap: wrap;
 
-  & > div {
+  & > button {
+    margin: 0;
+    padding: 0;
     width: 40px;
     height: 40px;
     display: flex;
@@ -28,5 +41,27 @@
     justify-content: center;
     box-sizing: border-box;
     border: 1px solid #c9d1d9;
+    background: none;
+  }
+}
+
+.monthPicker {
+  width: 280px;
+  height: 240px;
+  display: flex;
+  flex-wrap: wrap;
+
+  & > button {
+    margin: 0;
+    padding: 0;
+    width: 70px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid #c9d1d9;
+    font-size: 12px;
+    background: none;
   }
 }
