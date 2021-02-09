@@ -21,6 +21,7 @@ import {
   addYears,
   setYear,
   getYear,
+  isValid,
 } from 'date-fns';
 import styles from './styles.module.scss';
 
@@ -76,6 +77,7 @@ const getDateWithNewYear = (date: Date) => setYear(date, getYear(date));
 
 const DatePicker = () => {
   const [date, setDate] = useState(new Date());
+  const [value, setValue] = useState('');
 
   const [pickerType, setPickerType] = useState<'day' | 'month' | 'year'>('day');
 
@@ -95,6 +97,11 @@ const DatePicker = () => {
   const days = getDays(date);
   const months = getMonths(date);
   const years = getYears(date);
+
+  const handleDayClick = (newDate: Date) => {
+    setValue(format(newDate, 'dd MMMM, yyyy'));
+    setDate(newDate);
+  };
 
   const handleMonthClick = (newDate: Date) => {
     setDate(getDateWithNewMonth(newDate));
@@ -122,8 +129,24 @@ const DatePicker = () => {
     return undefined;
   };
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.currentTarget.value;
+    const parsedDate = new Date(newValue);
+
+    if (isValid(parsedDate)) setDate(parsedDate);
+
+    setValue(newValue);
+  };
+
   return (
     <div className={styles.container}>
+      <input
+        type="text"
+        value={value}
+        onChange={handleChange}
+        className={styles.input}
+        placeholder="Select Date"
+      />
       <div className={styles.top}>
         <button type="button" onClick={handlePrevClick}>
           {'<'}
@@ -164,6 +187,7 @@ const DatePicker = () => {
             <button
               type="button"
               key={String(day)}
+              onClick={() => handleDayClick(day)}
               style={{ opacity: isSameMonth(day, date) ? 1 : 0.2 }}
             >
               {format(day, 'dd')}
