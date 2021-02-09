@@ -22,6 +22,7 @@ import {
   setYear,
   getYear,
   isValid,
+  isSameDay,
 } from 'date-fns';
 import styles from './styles.module.scss';
 
@@ -188,7 +189,10 @@ const DatePicker = () => {
               type="button"
               key={String(day)}
               onClick={() => handleDayClick(day)}
-              style={{ opacity: isSameMonth(day, date) ? 1 : 0.2 }}
+              style={{
+                opacity: isSameMonth(day, date) ? 1 : 0.2,
+                outline: isSameDay(day, new Date(value)) ? '4px solid red' : undefined,
+              }}
             >
               {format(day, 'dd')}
             </button>
