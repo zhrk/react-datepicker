@@ -82,6 +82,12 @@ const DatePicker = () => {
   const prevMonth = () => setDate(subMonths(date, 1));
   const nextMonth = () => setDate(addMonths(date, 1));
 
+  const prevYear = () => setDate(subYears(date, 1));
+  const nextYear = () => setDate(addYears(date, 1));
+
+  const prevDecade = () => setDate(subYears(date, 10));
+  const nextDecade = () => setDate(addYears(date, 10));
+
   const setDayPicker = () => setPickerType('day');
   const setMonthPicker = () => setPickerType('month');
   const setYearPicker = () => setPickerType('year');
@@ -100,10 +106,26 @@ const DatePicker = () => {
     setMonthPicker();
   };
 
+  const handlePrevClick = () => {
+    if (pickerType === 'day') return prevMonth();
+    if (pickerType === 'month') return prevYear();
+    if (pickerType === 'year') return prevDecade();
+
+    return undefined;
+  };
+
+  const handleNextClick = () => {
+    if (pickerType === 'day') return nextMonth();
+    if (pickerType === 'month') return nextYear();
+    if (pickerType === 'year') return nextDecade();
+
+    return undefined;
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.top}>
-        <button type="button" onClick={prevMonth}>
+        <button type="button" onClick={handlePrevClick}>
           {'<'}
         </button>
         <div className={styles.title}>
@@ -132,7 +154,7 @@ const DatePicker = () => {
             </>
           )}
         </div>
-        <button type="button" onClick={nextMonth}>
+        <button type="button" onClick={handleNextClick}>
           {'>'}
         </button>
       </div>
