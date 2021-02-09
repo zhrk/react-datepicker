@@ -12,6 +12,8 @@ import {
 } from 'date-fns';
 import styles from './styles.module.scss';
 
+// 3
+
 const getDays = (date: Date) => {
   const GRID_DAYS_AMOUNT = 42;
 
@@ -39,14 +41,20 @@ const DatePicker = () => {
 
   const days = getDays(date);
 
+  const month = format(date, 'MMMM');
+  const year = format(date, 'yyyy');
+
   return (
     <div className={styles.container}>
-      <div className={styles.buttons}>
+      <div className={styles.top}>
         <button type="button" onClick={prevMonth}>
-          prev
+          {'<'}
         </button>
+        <div className={styles.monthYear}>
+          {month} {year}
+        </div>
         <button type="button" onClick={nextMonth}>
-          next
+          {'>'}
         </button>
       </div>
       <div className={styles.picker}>

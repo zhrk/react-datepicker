@@ -1,12 +1,17 @@
 .container {
   display: flex;
-  align-items: center;
   flex-direction: column;
 }
 
-.buttons {
-  display: flex;
+.top {
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.monthYear {
+  font-size: 18px;
 }
 
 .picker {
