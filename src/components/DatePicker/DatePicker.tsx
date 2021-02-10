@@ -23,10 +23,14 @@ import {
   getYear,
   isValid,
   isSameDay,
+  setHours,
+  getHours as getHour,
+  setMinutes,
+  getMinutes as getMinute,
 } from 'date-fns';
 import styles from './styles.module.scss';
 
-// 3
+// 7
 
 const YEAR_BEFORE_DECADE = 0;
 const YEAR_AFTER_DECADE = 11;
@@ -73,8 +77,30 @@ const getYears = (date: Date) => {
   return years;
 };
 
+const getHours = (date: Date) => {
+  const hours = [];
+
+  for (let i = 0; i < 24; i += 1) {
+    hours.push(setHours(date, i));
+  }
+
+  return hours;
+};
+
+const getMinutes = (date: Date) => {
+  const minutes = [];
+
+  for (let i = 0; i < 60; i += 1) {
+    minutes.push(setMinutes(date, i));
+  }
+
+  return minutes;
+};
+
 const getDateWithNewMonth = (date: Date) => setMonth(date, getMonth(date));
 const getDateWithNewYear = (date: Date) => setYear(date, getYear(date));
+const getDateWithNewHour = (date: Date) => setHours(date, getHour(date));
+const getDateWithNewMinute = (date: Date) => setMinutes(date, getMinute(date));
 
 const DatePicker = () => {
   const [date, setDate] = useState(new Date());
@@ -98,9 +124,11 @@ const DatePicker = () => {
   const days = getDays(date);
   const months = getMonths(date);
   const years = getYears(date);
+  const hours = getHours(date);
+  const minutes = getMinutes(date);
 
   const handleDayClick = (newDate: Date) => {
-    setValue(format(newDate, 'dd MMMM, yyyy'));
+    setValue(format(newDate, 'dd MMMM, yyyy, HH:mm'));
     setDate(newDate);
   };
 
@@ -112,6 +140,20 @@ const DatePicker = () => {
   const handleYearClick = (newDate: Date) => {
     setDate(getDateWithNewYear(newDate));
     setMonthPicker();
+  };
+
+  const handleHourClick = (newDate: Date) => {
+    const dateWithNewHour = getDateWithNewHour(newDate);
+
+    setDate(dateWithNewHour);
+    setValue(format(dateWithNewHour, 'dd MMMM, yyyy, HH:mm'));
+  };
+
+  const handleMinuteClick = (newDate: Date) => {
+    const dateWithNewMinute = getDateWithNewMinute(newDate);
+
+    setDate(dateWithNewMinute);
+    setValue(format(dateWithNewMinute, 'dd MMMM, yyyy, HH:mm'));
   };
 
   const handlePrevClick = () => {
@@ -140,7 +182,7 @@ const DatePicker = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.test}>
       <input
         type="text"
         value={value}
@@ -148,82 +190,107 @@ const DatePicker = () => {
         className={styles.input}
         placeholder="Select Date"
       />
-      <div className={styles.top}>
-        <button type="button" onClick={handlePrevClick}>
-          {'<'}
-        </button>
-        <div className={styles.title}>
+      <div className={styles.container}>
+        <div className={styles.datePicker}>
+          <div className={styles.top}>
+            <button type="button" onClick={handlePrevClick}>
+              {'<'}
+            </button>
+            <div className={styles.title}>
+              {pickerType === 'day' && (
+                <>
+                  <button type="button" onClick={setMonthPicker}>
+                    {format(date, 'MMMM')}
+                  </button>{' '}
+                  <button type="button" onClick={setYearPicker}>
+                    {format(date, 'yyyy')}
+                  </button>
+                </>
+              )}
+              {pickerType === 'month' && (
+                <>
+                  <button type="button" onClick={setMonthPicker}>
+                    {format(date, 'yyyy')}
+                  </button>
+                </>
+              )}
+              {pickerType === 'year' && (
+                <>
+                  <button type="button" onClick={setMonthPicker}>
+                    {`${format(startOfDecade(date), 'yyyy')} - ${format(
+                      endOfDecade(date),
+                      'yyyy'
+                    )}`}
+                  </button>
+                </>
+              )}
+            </div>
+            <button type="button" onClick={handleNextClick}>
+              {'>'}
+            </button>
+          </div>
           {pickerType === 'day' && (
-            <>
-              <button type="button" onClick={setMonthPicker}>
-                {format(date, 'MMMM')}
-              </button>{' '}
-              <button type="button" onClick={setYearPicker}>
-                {format(date, 'yyyy')}
-              </button>
-            </>
+            <div className={styles.dayPicker}>
+              {days.map((day) => (
+                <button
+                  type="button"
+                  key={String(day)}
+                  onClick={() => handleDayClick(day)}
+                  style={{
+                    opacity: isSameMonth(day, date) ? 1 : 0.2,
+                    outline: isSameDay(day, new Date(value)) ? '4px solid red' : undefined,
+                  }}
+                >
+                  {format(day, 'dd')}
+                </button>
+              ))}
+            </div>
           )}
           {pickerType === 'month' && (
-            <>
-              <button type="button" onClick={setMonthPicker}>
-                {format(date, 'yyyy')}
-              </button>
-            </>
+            <div className={styles.monthPicker}>
+              {months.map((month) => (
+                <button type="button" key={String(month)} onClick={() => handleMonthClick(month)}>
+                  {format(month, 'MMMM')}
+                </button>
+              ))}
+            </div>
           )}
           {pickerType === 'year' && (
-            <>
-              <button type="button" onClick={setMonthPicker}>
-                {`${format(startOfDecade(date), 'yyyy')} - ${format(endOfDecade(date), 'yyyy')}`}
-              </button>
-            </>
+            <div className={styles.yearPicker}>
+              {years.map((year, index) => (
+                <button
+                  type="button"
+                  key={String(year)}
+                  onClick={() => handleYearClick(year)}
+                  style={{
+                    opacity: index === YEAR_BEFORE_DECADE || index === YEAR_AFTER_DECADE ? 0.2 : 1,
+                  }}
+                >
+                  {format(year, 'yyyy')}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-        <button type="button" onClick={handleNextClick}>
-          {'>'}
-        </button>
+        {value && (
+          <div className={styles.timePicker}>
+            <div>
+              {hours.map((hour) => (
+                <button type="button" onClick={() => handleHourClick(hour)}>
+                  {format(hour, 'HH')}
+                </button>
+              ))}
+            </div>
+            <div>
+              {minutes.map((minute) => (
+                <button type="button" onClick={() => handleMinuteClick(minute)}>
+                  {format(minute, 'mm')}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-      {pickerType === 'day' && (
-        <div className={styles.dayPicker}>
-          {days.map((day) => (
-            <button
-              type="button"
-              key={String(day)}
-              onClick={() => handleDayClick(day)}
-              style={{
-                opacity: isSameMonth(day, date) ? 1 : 0.2,
-                outline: isSameDay(day, new Date(value)) ? '4px solid red' : undefined,
-              }}
-            >
-              {format(day, 'dd')}
-            </button>
-          ))}
-        </div>
-      )}
-      {pickerType === 'month' && (
-        <div className={styles.monthPicker}>
-          {months.map((month) => (
-            <button type="button" key={String(month)} onClick={() => handleMonthClick(month)}>
-              {format(month, 'MMMM')}
-            </button>
-          ))}
-        </div>
-      )}
-      {pickerType === 'year' && (
-        <div className={styles.yearPicker}>
-          {years.map((year, index) => (
-            <button
-              type="button"
-              key={String(year)}
-              onClick={() => handleYearClick(year)}
-              style={{
-                opacity: index === YEAR_BEFORE_DECADE || index === YEAR_AFTER_DECADE ? 0.2 : 1,
-              }}
-            >
-              {format(year, 'yyyy')}
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

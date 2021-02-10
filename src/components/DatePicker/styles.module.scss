@@ -1,4 +1,4 @@
-.container {
+.test {
   display: flex;
   flex-direction: column;
 }
@@ -7,7 +7,17 @@
   margin-bottom: 32px;
 }
 
+.container {
+  display: flex;
+}
+
+.datePicker {
+  display: flex;
+  flex-direction: column;
+}
+
 .top {
+  height: 24px;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -88,5 +98,33 @@
     border: 1px solid #c9d1d9;
     font-size: 12px;
     background: none;
+  }
+}
+
+.timePicker {
+  margin-top: 40px;
+  margin-left: 8px;
+  display: flex;
+
+  & > div {
+    height: 240px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+
+    & > button {
+      margin: 0;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      justify-content: center;
+      box-sizing: border-box;
+      border: 1px solid #c9d1d9;
+      font-size: 12px;
+      background: none;
+    }
   }
 }
